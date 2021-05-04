@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: afstemning-worker-deployment
+  labels: 
+    app: afstemning-redis
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: afstemning-redis
+  template:
+    metadata:
+      labels:
+        app: afstemning-redis
+    spec:
+      containers:
+      - name: afstemning-worker
+        image: afstemning-worker
+      

@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: afstemning-deployment
+  labels: 
+    app: afstemning
+    tier: backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: afstemning
+        tier: backend
+    spec:
+      containers:
+      - name: afstemning
+        image: localhost:32000/afstemning
+        imagePullPolicy: Always
+      - name: afstemning-nginx
+        image: localhost:32000/afstemning-nginx
+        imagePullPolicy: Always
+        ports: 
+        - containerPort: 8000
+      

@@ -1,0 +1,60 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: cockroachdb-test-initscripts
+  labels:
+    type: local
+spec:
+  storageClassName: local
+  capacity:
+    storage: 10Mi
+  accessModes:
+  - ReadWriteOnce
+  local:
+    path: /data/cockroachdb-test-initscripts
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - simpi401
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cockroachdb-test-initscripts
+spec:
+  storageClassName: local
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Mi
+  selector:
+    matchLabels:
+      directory: local
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: cockroach-db-init
+spec:
+  template:
+    spec:
+      containers:
+      - name: cockroach-db-init
+        image: simcax/cockroach:20.2.8
+        command:
+          - "/initdata/initdb.sh"
+        volumeMounts:
+        - name: cockroachdb-test-initscripts
+          mountPath: "/initdata"
+      restartPolicy: Never
+      volumes:
+      - name: cockroachdb-test-initscripts
+        persistentVolumeClaim:
+          claimName: cockroachdb-test-initscripts      
+  backoffLimit: 4
