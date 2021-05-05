@@ -3,13 +3,20 @@ type: kubernetes
 name: Deploy Afstemning
 steps:
   - name: Deploy Main Container
-    image: sinlead/drone-kubectl
+    image: ubuntu
     settings:
-      kubernetes_server:
-        from_secret: k8s_server
+      kube_config:
+        from_secret: kube_config
       kubernetes_cert:
         from_secret: k8s_cert
       kubernetes_token:
         from_secret: k8s_token
     commands:
-      - kubectl create -f afstemning-deployment.yaml
+      - apt update && apt install curl gnupg2 
+      - curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+      - touch /etc/apt/sources.list.d/kubernetes.list 
+      - echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | tee -a /etc/apt/sources.list.d/kubernetes.list
+      - apt-get update
+      - apt-get install -y kubectl
+      - mkdir .kube && echo $${kube_config} > .kube/config
+      - kubectl get nodes
