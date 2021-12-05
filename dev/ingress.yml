@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: afstemning-ingress
+  namespace: afstemningdev
+  annotations:
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: dev.afstemning.nu
+      http:
+        paths:
+          - backend:
+              service:
+                name: afstemning
+                port:
+                  number: 30000
+            path: /
+            pathType: Prefix
+  # This section is only required if TLS is to be enabled for the Ingress
+  tls:
+    - hosts:
+      - dev.afstemning.nu
+      secretName: dev-afstemning-tls

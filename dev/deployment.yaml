@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: afstemning
+  namespace: afstemningdev
+  labels:
+    app: afstemning
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: afstemning
+  template:
+    metadata:
+      labels:
+        app: afstemning
+    spec:
+      containers: 
+        - name: afstemning
+          image: simcax/afstemning:latest
+          imagePullPolicy: Always
+          env:
+          - name: REDIS_HOST
+            value: redis
+          - name: DB_HOST
+            value: free-tier5.gcp-europe-west1.cockroachlabs.cloud
+          - name: DB_USER
+            valueFrom:
+              secretKeyRef:
+                name: cockroachdb-credentials
+                key: username
+          - name: DB_PASS
+            valueFrom:
+              secretKeyRef:
+                name: cockroachdb-credentials
+                key: password
+          - name: DB_SSLMODE
+            valueFrom:
+              secretKeyRef:
+                name: cockroachdb-credentials
+                key: sslmode
+          - name: SESSION_COOKIE_DOMAIN
+            value: test.afstemning.nu
+          - name: SESSION_COOKIE_NAME
+            value: afstemning
+          ports:
+            - containerPort: 30000
+              name: flask
+              protocol: TCP
+          volumeMounts:
+            - name: cockroachdb-ssl-cert-volume
+              mountPath: "/etc/cockroachdb-ssl-cert"
+              readOnly: true
+          resources:
+            limits:
+              memory: "200Mi"
+              cpu: "200m"
+            requests:
+              memory: "100Mi"
+              cpu: "100m"
+      volumes:
+        - name: cockroachdb-ssl-cert-volume
+          secret:
+            secretName: cockroach-ssl-cert
+      imagePullSecrets:
+      - name: regcred
+      
