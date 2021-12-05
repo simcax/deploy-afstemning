@@ -44,7 +44,7 @@ spec:
           - name: SESSION_COOKIE_NAME
             value: afstemning
           ports:
-            - containerPort: 30000
+            - containerPort: 30001
               name: flask
               protocol: TCP
           volumeMounts:
