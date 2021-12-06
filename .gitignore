@@ -1,2 +1,3 @@
 test-afstemning-tls.yaml
 cockroachdb-creds.yaml
+regcred.yaml

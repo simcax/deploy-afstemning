@@ -15,7 +15,7 @@ spec:
               service:
                 name: afstemning
                 port:
-                  number: 30000
+                  number: 30001
             path: /
             pathType: Prefix
   # This section is only required if TLS is to be enabled for the Ingress
